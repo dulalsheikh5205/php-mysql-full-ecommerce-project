@@ -1,3 +1,15 @@
+<?php
+  include_once './php_files/config.php';
+  session_start();
+
+  if(isset($_SESSION['adminName'])){
+    header("location: $base_url/admin/dashboard.php");
+  }
+  
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,22 +27,22 @@
 <body>
     
     <div class="container">
-    <div class="row">
-    <form method="POST" autocomplete="off" id="full-form" class="w-25 mx-auto mt-5">
-        <h2>Online Shop</h2>
-     <div class="mb-3">
-    <label for="exampleInputEmail1" class="form-label">User Name</label>
-    <input type="email" class="form-control" name="email" id="exampleInputEmail1" aria-describedby="emailHelp">
-  
-  </div>
-  <div class="mb-3">
-    <label for="exampleInputPassword1" class="form-label">Password</label>
-    <input type="password" class="form-control" name="password" id="exampleInputPassword1">
-  </div>
-
-  <button type="submit" name="btn" class="btn btn-primary">Submit</button>
-</form>
+      <div class="row">
+        <form method="POST" autocomplete="off" id="full-form" class="w-25 mx-auto mt-5">
+            <h2>Online Shop</h2>
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">User Name</label>
+            <input type="text" class="form-control username" name="username" id="exampleInputEmail1" aria-describedby="emailHelp">
+          </div>
+      
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label">Password</label>
+          <input type="password" class="form-control password" name="password" id="exampleInputPassword1">
         </div>
+
+        <button type="submit" name="btn" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
     </div>
 
 

@@ -3,7 +3,7 @@ class Database {
     private $db_host = "localhost";
     private $db_user = "root";
     private $db_password = "";
-    private $db_name = "ecommerce_shopping";
+    private $db_name = "shopping_db";
     private $result = array();
     private $mysqli = "";
     private $myquery = "";
@@ -57,6 +57,7 @@ class Database {
             if($where !== null){
                 $sql.="WHERE $where";
             }
+            $this->myquery  = $sql;
             if($this->mysqli->query($sql)){
                 array_push($this->result,$this->mysqli->affected_rows);
                 return true;
@@ -94,36 +95,46 @@ class Database {
 
     /** Select Query Function Method Here */
 
-    public function select($table,$row = "*", $join = null, $where = null, $order = null, $limit = null)
+    public function select($table,$row = " * ", $join = null, $where = null, $order = null, $limit = null)
     {
         if($this->tableExists($table)){
-            $sql = "SELECT $row FROM $table";
-            if($join !== null){
-                $sql .= "JOIN $join";
+            $sql = " SELECT $row FROM $table ";
+            if($join != null){
+                $sql .= " JOIN ". $join;
 
             }
-            if($where !== null){
-                $sql.= "WHERE $where";
+            if($where != null){
+                $sql .= " WHERE " . $where;
             }
-            if($order !== null){
-                $sql.="ORDER BY $order";
+            
+            if($order != null){
+                $sql .= " ORDER BY " .  $order;
 
             }
-            if($limit !== null){
+            if($limit != null){
                 if(isset($_GET['page'])){
                     $page = $_GET['page'];
                 }else $page = 1;
-            $start = ($page -1)* $limit;
-            $sql.="LIMIT $start , $limit";
+            $start = ($page -1) * $limit;
+            $sql .= " LIMIT " . $start .",". $limit;
+            }
+           $this->myquery = $sql;
+           $query = $this->mysqli->query($sql);
+           if($query){
+            $this->result = $query->fetch_all(MYSQLI_ASSOC);
+            /** $this->mysqli->query($sql)->fetch_all(MYSQLI_ASSOC) */
             return true;
-            }
-            else{
-                return false;
-            }
-        }else{
+           }
+           else{
+            array_push($this->result,$this->mysqli->connect_error);
             return false;
-        }
+           }
+
     }
+    else {
+        return false;
+    }
+}
 
 
     /** Function Method to check whether table exist or not in database
@@ -136,6 +147,46 @@ class Database {
 
             }else{
                 array_push($this->result,$table." doesn't exist ");
+                return false;
+            }
+        }
+    }
+    /** This function to get the result of fetch and error */
+    function getSql(){
+        $sqlval = $this->myquery;
+        $this->myquery = array();
+        return $sqlval;
+    }
+
+    /** this function to escape string from input value */
+    function escapeString($data){
+        $input_val = trim($data);
+        $input_val = stripslashes($input_val);
+        $input_val = htmlspecialchars($input_val);
+        $result = $this->mysqli->real_escape_string($input_val);
+        return $result;
+    }
+
+    /** To get Result of fetching data from $this->result */
+
+    function getResult(){
+        $resultVal = $this->result;
+        $this->result = array();
+        return $resultVal;
+    }
+
+    /** This function is for input validatation */
+    
+    /** Destruct method to destroy the mysqli function of construct method */
+
+    function __destruct()
+    {
+        if($this->conn){
+            if($this->mysqli->close()){
+                $this->conn = false;
+                return true;
+            }
+            else{
                 return false;
             }
         }
